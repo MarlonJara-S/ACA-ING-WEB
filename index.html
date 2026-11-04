@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Athletix · Recomendaciones saludables para deportistas</title>
+<meta name="description" content="Prototipo de Athletix: recomendaciones de nutrición, hidratación y recuperación para deportistas de alto rendimiento.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="container topbar-inner">
+    <div class="topbar-left">
+      <button class="brand" data-go="inicio" aria-label="Athletix, ir al inicio">
+        <span class="brand-mark"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19 12 5l8 14 M8 13h8"/></svg></span>
+        <span class="brand-name">Athletix</span>
+      </button>
+      <nav class="nav" aria-label="Navegación principal">
+        <button class="nav-link" data-go="inicio">Inicio</button>
+        <button class="nav-link" data-go="biblioteca">Biblioteca</button>
+        <button class="nav-link" data-go="favoritos">Favoritos y hábitos</button>
+      </nav>
+    </div>
+    <div class="topbar-right">
+      <button class="search-trigger" data-go="biblioteca" data-focus-search>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M10.5 4a6.5 6.5 0 1 0 0 13a6.5 6.5 0 1 0 0-13Z M15.5 15.5 20 20"/></svg>
+        Buscar recomendaciones…
+      </button>
+    </div>
+  </div>
+</header>
+
+<main id="app" class="container" tabindex="-1"></main>
+
+<footer class="footer">
+  <div class="container footer-inner">
+    <span>© 2026 Athletix · Proyecto académico de Ingeniería Web</span>
+    <span>Las recomendaciones son orientativas y no reemplazan a tu médico o nutricionista.</span>
+  </div>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>
