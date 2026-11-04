@@ -4,7 +4,6 @@
   // Fotos de Unsplash (licencia Unsplash, uso libre).
   function photo(id, w) { return 'https://images.unsplash.com/' + id + '?auto=format&fit=crop&w=' + (w || 900) + '&q=70'; }
   var HERO_PHOTO = 'photo-1526676317768-d9b14f15615a';
-  var LIB_PHOTO = 'photo-1461896836934-ffe607ba8211';
 
   var ICONS = {
     bowl: 'M3 11h18a9 9 0 0 1-18 0Z M8 7.5c0-1.5 1-1.5 1-3 M12 7.5c0-1.5 1-1.5 1-3 M16 7.5c0-1.5 1-1.5 1-3',
@@ -59,13 +58,6 @@
       icon(iconName, 40, c.ink, { sw: 1.5 }) +
       '<img src="' + photo(id, w) + '" alt="' + esc(alt || '') + '" loading="lazy" onerror="this.remove()"></span>';
   }
-  function ring(value, max, size, stroke, label) {
-    var r = (size - stroke) / 2, circ = 2 * Math.PI * r, p = Math.min(1, value / max);
-    return '<span class="ring" style="width:' + size + 'px;height:' + size + 'px"><svg width="' + size + '" height="' + size + '" aria-hidden="true">' +
-      '<circle cx="' + size / 2 + '" cy="' + size / 2 + '" r="' + r + '" fill="none" stroke="#F4F4F5" stroke-width="' + stroke + '"/>' +
-      '<circle cx="' + size / 2 + '" cy="' + size / 2 + '" r="' + r + '" fill="none" stroke="' + (p >= 1 ? '#65A30D' : '#18181B') + '" stroke-width="' + stroke + '" stroke-linecap="round" stroke-dasharray="' + circ.toFixed(1) + '" stroke-dashoffset="' + (circ * (1 - p)).toFixed(1) + '"/>' +
-      '</svg><span class="ring-label">' + label + '</span></span>';
-  }
   function isFav(id) { return state.favs.indexOf(id) !== -1; }
   function byId(id) { return ITEMS.filter(function (i) { return i.id === id; })[0] || ITEMS[0]; }
   function restLabel(m) { var h = Math.floor(m / 60), r = m % 60; return h + ' h' + (r ? ' ' + r + ' min' : ''); }
@@ -76,70 +68,58 @@
     return '<button class="fav-btn" data-fav="' + it.id + '" aria-pressed="' + f + '" aria-label="' + (f ? 'Quitar de favoritos' : 'Guardar en favoritos') + '">' +
       icon('star', 18, f ? '#CA8A04' : '#3F3F46', { fill: f ? '#FACC15' : 'none' }) + '</button>';
   }
-  function catBadge(c, floating) {
-    return '<span class="badge' + (floating ? ' badge-float' : '') + '"><span class="badge-dot" style="background:' + c.dot + '"></span>' + c.label + '</span>';
+  function catBadge(c) {
+    return '<span class="badge"><span class="badge-dot" style="background:' + c.dot + '"></span>' + c.label + '</span>';
   }
-  function recCard(it, opts) {
-    opts = opts || {};
+  // Tarjeta (wireframe): imagen + estrella, categoría, título y descripción.
+  function recCard(it) {
     var c = CATS[it.cat];
     return '<article class="card rec">' +
       '<button class="rec-open" data-open="' + it.id + '">' +
-      media(it.photo, it.cat, it.icon, '', 'height:' + (opts.small ? 160 : 190) + 'px', it.alt, 700) +
-      '<span class="rec-text"><span class="rec-title">' + esc(it.title) + '</span>' +
-      (opts.small ? '' : '<span class="rec-desc">' + esc(it.desc) + '</span>') +
-      '<span class="rec-meta">' + icon('clock', 13, '#71717A') + esc(it.momento) + '</span></span>' +
-      '</button>' + catBadge(c, true) + favBtn(it) + '</article>';
+      media(it.photo, it.cat, it.icon, '', 'height:180px', it.alt, 700) +
+      '<span class="rec-text">' + catBadge(c) + '<span class="rec-title">' + esc(it.title) + '</span>' +
+      '<span class="rec-desc">' + esc(it.desc) + '</span></span>' +
+      '</button>' + favBtn(it) + '</article>';
+  }
+  function bar(v, max) {
+    return '<span class="progress"><span style="width:' + pct(v, max) + '%"></span></span>';
   }
 
+  // Pantalla 1 · Inicio
   function viewInicio() {
-    var day = ITEMS[1];
     var cats = Object.keys(CATS).map(function (k) {
       var c = CATS[k];
-      var n = ITEMS.filter(function (i) { return i.cat === k; }).length;
       return '<button class="cat-card" data-cat-go="' + k + '">' +
-        media(c.photo, k, c.icon, '', '', '', 800) +
-        '<span class="cat-top"><span class="cat-icon">' + icon(c.icon, 18, '#FFFFFF') + '</span><span class="cat-count">' + n + ' recomendaciones</span></span>' +
-        '<span class="cat-inner"><span class="cat-title">' + c.label + '</span><span class="cat-desc">' + c.desc + '</span></span></button>';
+        '<span class="cat-icon" style="background:' + c.tile + '">' + icon(c.icon, 26, c.ink, { sw: 1.8 }) + '</span>' +
+        '<span class="cat-title">' + c.label + '</span><span class="cat-desc">' + c.desc + '</span>' +
+        '<span class="cat-link">Ver recomendaciones' + icon('arrow', 14, '#71717A') + '</span></button>';
     }).join('');
-    var featured = ITEMS.filter(function (i) { return i.featured; }).map(function (i) { return recCard(i); }).join('');
+    var featured = ITEMS.filter(function (i) { return i.featured; }).map(recCard).join('');
 
     return '' +
       '<section class="hero">' +
-        '<img src="' + photo(HERO_PHOTO, 1800) + '" alt="" onerror="this.remove()">' +
-        '<div class="hero-inner">' +
-          '<div class="hero-text">' +
-            '<span class="pill-glass"><span class="pulse"></span>Para deportistas de alto rendimiento</span>' +
-            '<h1 class="hero-title">Entrena, come y descansa como un <span>profesional</span>.</h1>' +
-            '<p class="hero-lead">Recomendaciones saludables de nutrición, hidratación y recuperación para rendir más y recuperarte mejor.</p>' +
-            '<div class="btn-row"><button class="btn btn-light" data-go="biblioteca">Explorar biblioteca' + icon('arrow', 16, '#09090B') + '</button>' +
-            '<button class="btn btn-glass" data-go="favoritos">Mis hábitos</button></div>' +
-            '<div class="hero-stats">' +
-              '<span class="hero-stat"><b>' + ITEMS.length + '</b><span>recomendaciones</span></span>' +
-              '<span class="hero-stat"><b>3</b><span>categorías</span></span>' +
-              '<span class="hero-stat"><b>2</b><span>hábitos diarios</span></span>' +
-            '</div>' +
-          '</div>' +
-          '<button class="day-card" data-open="' + day.id + '">' +
-            media(day.photo, day.cat, day.icon, '', '', '', 300) +
-            '<span class="day-card-text"><span class="eyebrow">Recomendación del día</span><span class="day-card-title">' + esc(day.title) + '</span>' +
-            '<span class="rec-meta" style="margin:0">' + icon('clock', 13, '#71717A') + esc(day.momento) + '</span></span>' +
-          '</button>' +
+        '<div class="hero-text">' +
+          '<span class="badge"><span class="badge-dot" style="background:#65A30D"></span>Para deportistas de alto rendimiento</span>' +
+          '<h1 class="hero-title">Entrena, come y descansa como un profesional</h1>' +
+          '<p class="lead">Recomendaciones saludables de nutrición, hidratación y recuperación para rendir más y recuperarte mejor.</p>' +
+          '<div class="btn-row"><button class="btn btn-primary" data-go="biblioteca">Explorar biblioteca' + icon('arrow', 16, '#FAFAFA') + '</button>' +
+          '<button class="btn btn-outline" data-go="favoritos">Mis hábitos</button></div>' +
         '</div>' +
+        '<div class="hero-media"><img src="' + photo(HERO_PHOTO, 1400) + '" alt="Velocista saliendo de los tacos en una pista de atletismo" onerror="this.remove()"></div>' +
       '</section>' +
 
-      '<section class="section"><div class="section-head"><div><h2 class="h2">Categorías</h2><p class="sub">Elige un tema para ver sus recomendaciones.</p></div></div>' +
+      '<section class="section"><h2 class="h2">Categorías</h2>' +
         '<div class="grid grid-3">' + cats + '</div></section>' +
 
-      '<section class="section"><div class="section-head"><div><h2 class="h2">Recomendaciones destacadas</h2><p class="sub">Seleccionadas para tu entrenamiento de esta semana.</p></div>' +
-        '<button class="btn btn-outline" data-go="biblioteca">Ver todo' + icon('arrow', 15, '#09090B') + '</button></div>' +
-        '<div class="grid grid-auto">' + featured + '</div></section>' +
+      '<section class="section"><h2 class="h2">Recomendaciones destacadas</h2>' +
+        '<div class="grid grid-3">' + featured + '</div></section>' +
 
-      '<section class="section"><div class="section-head"><div><h2 class="h2">Tu día de hoy</h2><p class="sub">Resumen de tus hábitos. Toca una tarjeta para registrar.</p></div></div>' +
+      '<section class="section"><h2 class="h2">Tu día de hoy</h2>' +
         '<div class="grid grid-2">' +
-          '<button class="ring-card" data-go="favoritos">' + ring(state.vasos, 8, 72, 7, pct(state.vasos, 8) + '%') +
-            '<span class="ring-text"><span class="ring-title">Hidratación</span><span class="ring-value">' + state.vasos + ' <small>de 8 vasos</small></span><span class="sub">Registrar en mis hábitos →</span></span></button>' +
-          '<button class="ring-card" data-go="favoritos">' + ring(state.mins, 480, 72, 7, pct(state.mins, 480) + '%') +
-            '<span class="ring-text"><span class="ring-title">Descanso</span><span class="ring-value">' + restLabel(state.mins) + ' <small>de 8 h</small></span><span class="sub">Registrar en mis hábitos →</span></span></button>' +
+          '<button class="day-card" data-go="favoritos"><span class="day-head"><span class="day-title">' + icon('drop', 16, '#0369A1') + 'Hidratación</span><span class="sub">' + state.vasos + ' / 8 vasos</span></span>' +
+            bar(state.vasos, 8) + '<span class="sub">Registrar en Favoritos y hábitos →</span></button>' +
+          '<button class="day-card" data-go="favoritos"><span class="day-head"><span class="day-title">' + icon('moon', 16, '#6D28D9') + 'Descanso</span><span class="sub">' + restLabel(state.mins) + ' / 8 h</span></span>' +
+            bar(state.mins, 480) + '<span class="sub">Registrar en Favoritos y hábitos →</span></button>' +
         '</div></section>';
   }
 
@@ -154,22 +134,23 @@
   function resultsHTML() {
     var list = filtered();
     var count = list.length === 1 ? '1 recomendación' : list.length + ' recomendaciones';
-    var body = list.length ? '<div class="grid grid-auto">' + list.map(function (i) { return recCard(i); }).join('') + '</div>' :
+    var body = list.length ? '<div class="grid grid-3">' + list.map(recCard).join('') + '</div>' :
       '<div class="empty"><span class="empty-icon">' + icon('search', 20, '#71717A') + '</span>' +
       '<span class="empty-title">No encontramos recomendaciones</span><span class="sub">Prueba con otra palabra o cambia la categoría.</span>' +
       '<button class="btn btn-outline" data-clear style="margin-top:6px">Limpiar filtros</button></div>';
     return { count: count, body: body };
   }
+
+  // Pantalla 2 · Biblioteca saludable
   function viewBiblioteca() {
     var tabs = [['todas', 'Todas'], ['nutricion', 'Nutrición'], ['hidratacion', 'Hidratación'], ['recuperacion', 'Recuperación']].map(function (t) {
       return '<button class="tab" role="tab" data-tab="' + t[0] + '" aria-selected="' + (state.cat === t[0]) + '">' + t[1] + '</button>';
     }).join('');
     var r = resultsHTML();
-    return '<div class="library-hero"><img src="' + photo(LIB_PHOTO, 1600) + '" alt="" onerror="this.remove()">' +
-        '<h1 class="h1">Biblioteca saludable</h1><p class="sub">Busca y filtra recomendaciones de nutrición, hidratación y recuperación.</p></div>' +
+    return '<div class="page-head"><h1 class="h1">Biblioteca saludable</h1></div>' +
       '<form class="search-row" data-search-form role="search">' +
         '<label class="input-wrap">' + icon('search', 16, '#71717A') + '<span class="sr-only">Buscar recomendación</span>' +
-        '<input id="q" type="search" autocomplete="off" placeholder="Buscar: proteína, sueño, calor…" value="' + esc(state.query) + '"></label>' +
+        '<input id="q" type="search" autocomplete="off" placeholder="Buscar recomendación…" value="' + esc(state.query) + '"></label>' +
         '<button class="btn btn-primary" type="submit" style="min-height:44px">Buscar</button>' +
       '</form>' +
       '<div class="toolbar"><div class="tabs" role="tablist" aria-label="Filtrar por categoría">' + tabs + '</div>' +
@@ -177,6 +158,7 @@
       '<div id="results">' + r.body + '</div>';
   }
 
+  // Pantalla 3 · Detalle de recomendación
   function viewDetalle() {
     var d = byId(state.detailId), c = CATS[d.cat], f = isFav(d.id);
     var related = ITEMS.filter(function (i) { return i.id !== d.id && i.cat === d.cat; })
@@ -184,18 +166,14 @@
     var steps = d.steps.map(function (s, i) {
       return '<li><span class="step-n">' + (i + 1) + '</span><span class="step-t">' + esc(s) + '</span></li>';
     }).join('');
-    return '<nav class="crumbs" aria-label="Ruta"><button class="btn btn-ghost" data-go="biblioteca" style="padding:0 10px 0 6px;margin-left:-6px;min-height:40px">' +
-      icon('back', 16, '#09090B') + 'Volver a la biblioteca</button><span aria-hidden="true">/</span><span style="padding-left:6px">' + c.label + '</span></nav>' +
+    return '<button class="btn btn-outline back-btn" data-go="biblioteca">' + icon('back', 16, '#09090B') + 'Volver a la biblioteca</button>' +
       '<div class="detail">' +
         media(d.photo, d.cat, d.icon, 'detail-media', '', d.alt, 1200) +
         '<div class="detail-info">' +
-          catBadge(c, false) +
+          catBadge(c) +
           '<h1 class="h1-detail">' + esc(d.title) + '</h1>' +
           '<p class="lead">' + esc(d.desc) + '</p>' +
-          '<div class="info-grid">' +
-            '<div class="info-tile">' + icon('clock', 18, '#09090B') + '<div><b style="font-weight:500">Momento ideal</b><span>' + esc(d.momento) + '</span></div></div>' +
-            '<div class="info-tile">' + icon('list', 18, '#09090B') + '<div><b style="font-weight:500">Pasos</b><span>' + d.steps.length + ' recomendaciones</span></div></div>' +
-          '</div>' +
+          '<div class="alert">' + icon('clock', 18, '#09090B') + '<span class="alert-body"><span><span class="alert-title">Momento ideal:</span> <span class="alert-desc">' + esc(d.momento) + '</span></span></span></div>' +
           '<div style="display:flex;flex-direction:column;gap:8px"><h2 style="font-size:15px;font-weight:500;letter-spacing:0">Pasos recomendados</h2><ol class="steps">' + steps + '</ol></div>' +
           '<div class="alert alert-success" role="note">' + icon('bulb', 18, '#4D7C0F') + '<span class="alert-body"><span class="alert-title">Consejo</span><span class="alert-desc">' + esc(d.tip) + '</span></span></div>' +
           '<div class="btn-row"><button class="btn btn-primary" data-fav="' + d.id + '" aria-pressed="' + f + '">' +
@@ -203,33 +181,32 @@
             '<button class="btn btn-outline" data-go="favoritos">Ir a mis hábitos</button></div>' +
         '</div>' +
       '</div>' +
-      '<div class="separator"></div>' +
-      '<section class="section" style="margin-top:32px"><div class="section-head"><div><h2 class="h2">Recomendaciones relacionadas</h2><p class="sub">Otras ideas que complementan esta recomendación.</p></div></div>' +
-        '<div class="grid grid-auto">' + related.map(function (i) { return recCard(i, { small: true }); }).join('') + '</div></section>';
+      '<section class="section"><h2 class="h2">Recomendaciones relacionadas</h2>' +
+        '<div class="grid grid-3">' + related.map(recCard).join('') + '</div></section>';
   }
 
+  // Pantalla 4 · Favoritos y hábitos
   function viewFavoritos() {
     var favs = ITEMS.filter(function (i) { return isFav(i.id); });
-    var list = favs.length ? '<div class="grid grid-auto">' + favs.map(function (i) { return recCard(i, { small: true }); }).join('') + '</div>' :
+    var list = favs.length ? '<div class="grid grid-3">' + favs.map(recCard).join('') + '</div>' :
       '<div class="empty"><span class="empty-icon">' + icon('star', 20, '#71717A') + '</span><span class="empty-title">Aún no tienes favoritos</span>' +
       '<span class="sub">Guarda recomendaciones con la estrella para tenerlas a mano.</span>' +
       '<button class="btn btn-primary" data-go="biblioteca" style="margin-top:6px">Explorar biblioteca</button></div>';
-    function habit(title, goal, value, unit, v, max, addAttr, addLabel, subAttr, subLabel, subAria) {
-      var done = v >= max;
-      return '<div class="card habit"><div class="habit-head">' + ring(v, max, 88, 8, pct(v, max) + '%') +
-        '<div class="habit-meta"><span class="habit-title">' + title + '</span><span class="habit-value">' + value + ' <small>' + unit + '</small></span>' +
-        (done ? '<span class="goal-done">' + icon('check', 13, '#3F6212', { sw: 2.5 }) + 'Meta cumplida</span>' : '<span class="sub">' + goal + '</span>') +
-        '</div></div>' +
-        '<div class="btn-row"><button class="btn btn-primary" ' + addAttr + '>' + icon('plus', 15, '#FAFAFA') + addLabel + '</button>' +
-        '<button class="btn btn-outline" ' + subAttr + (subAria ? ' aria-label="' + subAria + '"' : '') + '>' + icon('minus', 15, '#09090B') + subLabel + '</button></div></div>';
+    function habit(title, iconName, tile, ink, valueLabel, v, max, addAttr, addLabel, subAttr, subLabel, subAria) {
+      return '<div class="card habit">' +
+        '<div class="habit-head"><span class="habit-icon" style="background:' + tile + '">' + icon(iconName, 18, ink) + '</span>' +
+        '<span class="habit-meta"><span class="habit-title">' + title + '</span><span class="habit-value">' + valueLabel + '</span></span>' +
+        (v >= max ? '<span class="goal-done">' + icon('check', 13, '#3F6212', { sw: 2.5 }) + 'Meta cumplida</span>' : '') + '</div>' +
+        bar(v, max) +
+        '<div class="btn-row"><button class="btn btn-primary" ' + addAttr + '>' + addLabel + '</button>' +
+        '<button class="btn btn-outline" ' + subAttr + (subAria ? ' aria-label="' + subAria + '"' : '') + '>' + subLabel + '</button></div></div>';
     }
-    return '<div class="page-head"><h1 class="h1">Favoritos y hábitos</h1><p class="sub">Registra tus hábitos del día y revisa lo que guardaste.</p></div>' +
-      '<div class="alert alert-muted" role="note">' + icon('info', 18, '#09090B') + '<span class="alert-body"><span class="alert-title">Aviso</span><span class="alert-desc">Los registros son una simulación de prototipo y no se guardan.</span></span></div>' +
-      '<section class="section" style="margin-top:32px"><div class="section-head"><div><h2 class="h2">Registro de hábitos de hoy</h2><p class="sub">Suma o resta a medida que avanza tu día.</p></div></div><div class="grid grid-2">' +
-        habit('Hidratación', 'Meta: 8 vasos al día', state.vasos, 'de 8 vasos', state.vasos, 8, 'data-habit="vaso+"', '1 vaso', 'data-habit="vaso-"', '1', 'Quitar 1 vaso') +
-        habit('Descanso', 'Meta: 8 h de sueño', restLabel(state.mins), 'de 8 h', state.mins, 480, 'data-habit="min+"', '30 min', 'data-habit="min-"', '30 min', 'Quitar 30 minutos') +
+    return '<div class="alert alert-muted" role="note">' + icon('info', 18, '#09090B') + '<span class="alert-body"><span><span class="alert-title">Aviso:</span> <span class="alert-desc">los registros son una simulación de prototipo y no se guardan.</span></span></span></div>' +
+      '<section class="section" style="margin-top:32px"><h2 class="h2">Registro de hábitos de hoy</h2><div class="grid grid-2">' +
+        habit('Hidratación', 'drop', '#E0F2FE', '#0369A1', state.vasos + ' / 8 vasos', state.vasos, 8, 'data-habit="vaso+"', '+ 1 vaso', 'data-habit="vaso-"', '−1', 'Quitar 1 vaso') +
+        habit('Descanso', 'moon', '#EDE9FE', '#6D28D9', restLabel(state.mins) + ' / 8 h', state.mins, 480, 'data-habit="min+"', '+ 30 min', 'data-habit="min-"', '− 30 min', 'Quitar 30 minutos') +
       '</div></section>' +
-      '<section class="section" style="margin-top:44px"><div class="section-head"><div><h2 class="h2">Mis favoritos (' + favs.length + ')</h2><p class="sub">Las recomendaciones que guardaste con la estrella.</p></div></div>' + list + '</section>';
+      '<section class="section"><h2 class="h2">Mis favoritos (' + favs.length + ')</h2>' + list + '</section>';
   }
 
   var VIEWS = { inicio: viewInicio, biblioteca: viewBiblioteca, detalle: viewDetalle, favoritos: viewFavoritos };
@@ -354,9 +331,8 @@
     document.body.classList.add('is-loading');
     var fill = document.getElementById('loader-fill');
     var text = document.getElementById('loader-text');
-    var first = [photo(HERO_PHOTO, 1800), photo(LIB_PHOTO, 1600)];
-    Object.keys(CATS).forEach(function (k) { first.push(photo(CATS[k].photo, 800)); });
-    ITEMS.forEach(function (it) { first.push(photo(it.photo, 700)); first.push(photo(it.photo, 300)); });
+    var first = [photo(HERO_PHOTO, 1400)];
+    ITEMS.forEach(function (it) { first.push(photo(it.photo, 700)); });
     var started = Date.now(), finished = false;
     function finish() {
       if (finished) return;
