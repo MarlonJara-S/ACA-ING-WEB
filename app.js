@@ -169,7 +169,7 @@
         '<h1 class="h1">Biblioteca saludable</h1><p class="sub">Busca y filtra recomendaciones de nutrición, hidratación y recuperación.</p></div>' +
       '<form class="search-row" data-search-form role="search">' +
         '<label class="input-wrap">' + icon('search', 16, '#71717A') + '<span class="sr-only">Buscar recomendación</span>' +
-        '<input id="q" type="search" autocomplete="off" placeholder="Buscar recomendación… (proteína, sueño, calor)" value="' + esc(state.query) + '"></label>' +
+        '<input id="q" type="search" autocomplete="off" placeholder="Buscar: proteína, sueño, calor…" value="' + esc(state.query) + '"></label>' +
         '<button class="btn btn-primary" type="submit" style="min-height:44px">Buscar</button>' +
       '</form>' +
       '<div class="toolbar"><div class="tabs" role="tablist" aria-label="Filtrar por categoría">' + tabs + '</div>' +
