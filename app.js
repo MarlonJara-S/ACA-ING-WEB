@@ -89,10 +89,11 @@
   function viewInicio() {
     var cats = Object.keys(CATS).map(function (k) {
       var c = CATS[k];
+      var n = ITEMS.filter(function (i) { return i.cat === k; }).length;
       return '<button class="cat-card" data-cat-go="' + k + '">' +
-        '<span class="cat-icon" style="background:' + c.tile + '">' + icon(c.icon, 26, c.ink, { sw: 1.8 }) + '</span>' +
-        '<span class="cat-title">' + c.label + '</span><span class="cat-desc">' + c.desc + '</span>' +
-        '<span class="cat-link">Ver recomendaciones' + icon('arrow', 14, '#71717A') + '</span></button>';
+        media(c.photo, k, c.icon, 'cat-media', '', '', 800) +
+        '<span class="cat-top"><span class="cat-icon">' + icon(c.icon, 18, '#FFFFFF') + '</span><span class="cat-count">' + n + ' recomendaciones</span></span>' +
+        '<span class="cat-inner"><span class="cat-title">' + c.label + '</span><span class="cat-desc">' + c.desc + '</span></span></button>';
     }).join('');
     var featured = ITEMS.filter(function (i) { return i.featured; }).map(recCard).join('');
 
@@ -332,6 +333,7 @@
     var fill = document.getElementById('loader-fill');
     var text = document.getElementById('loader-text');
     var first = [photo(HERO_PHOTO, 1800)];
+    Object.keys(CATS).forEach(function (k) { first.push(photo(CATS[k].photo, 800)); });
     ITEMS.forEach(function (it) { first.push(photo(it.photo, 700)); });
     var started = Date.now(), finished = false;
     function finish() {
