@@ -9,8 +9,17 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
+<link rel="preload" as="image" href="https://images.unsplash.com/photo-1526676317768-d9b14f15615a?auto=format&fit=crop&w=1800&q=70" fetchpriority="high">
 </head>
 <body>
+<div id="loader" class="loader" role="status" aria-live="polite">
+  <div class="loader-inner">
+    <span class="loader-mark"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19 12 5l8 14 M8 13h8"/></svg></span>
+    <span class="loader-name">Athletix</span>
+    <span class="loader-bar"><span id="loader-fill"></span></span>
+    <span class="loader-text" id="loader-text">Preparando tu entrenamiento…</span>
+  </div>
+</div>
 <header class="topbar">
   <div class="container topbar-inner">
     <div class="topbar-left">

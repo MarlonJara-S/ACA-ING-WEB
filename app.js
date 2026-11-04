@@ -337,4 +337,46 @@
 
   window.addEventListener('hashchange', applyHash);
   applyHash();
+
+  // Pantalla de carga: descarga las fotos antes de mostrar la página.
+  function preload(urls, onProgress) {
+    var done = 0;
+    return Promise.all(urls.map(function (u) {
+      return new Promise(function (resolve) {
+        var img = new Image();
+        img.onload = img.onerror = function () { done++; onProgress(done / urls.length); resolve(); };
+        img.src = u;
+      });
+    }));
+  }
+  var loader = document.getElementById('loader');
+  if (loader) {
+    document.body.classList.add('is-loading');
+    var fill = document.getElementById('loader-fill');
+    var text = document.getElementById('loader-text');
+    var first = [photo(HERO_PHOTO, 1800), photo(LIB_PHOTO, 1600)];
+    Object.keys(CATS).forEach(function (k) { first.push(photo(CATS[k].photo, 800)); });
+    ITEMS.forEach(function (it) { first.push(photo(it.photo, 700)); first.push(photo(it.photo, 300)); });
+    var started = Date.now(), finished = false;
+    function finish() {
+      if (finished) return;
+      finished = true;
+      var wait = Math.max(0, 600 - (Date.now() - started)); // evita un parpadeo si carga muy rápido
+      setTimeout(function () {
+        if (fill) fill.style.width = '100%';
+        setTimeout(function () {
+          loader.classList.add('done');
+          document.body.classList.remove('is-loading');
+          setTimeout(function () { loader.remove(); }, 600);
+          // En segundo plano: fotos grandes del detalle.
+          ITEMS.forEach(function (it) { new Image().src = photo(it.photo, 1200); });
+        }, 250);
+      }, wait);
+    }
+    preload(first, function (p) {
+      if (fill) fill.style.width = Math.round(p * 100) + '%';
+      if (text && p > 0.5) text.textContent = 'Casi listo…';
+    }).then(finish);
+    setTimeout(finish, 6000); // límite por si la conexión es lenta
+  }
 })();
