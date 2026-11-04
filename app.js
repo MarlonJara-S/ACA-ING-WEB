@@ -98,14 +98,14 @@
 
     return '' +
       '<section class="hero">' +
+        '<img class="hero-bg" src="' + photo(HERO_PHOTO, 1800) + '" alt="" onerror="this.remove()">' +
         '<div class="hero-text">' +
-          '<span class="badge"><span class="badge-dot" style="background:#65A30D"></span>Para deportistas de alto rendimiento</span>' +
-          '<h1 class="hero-title">Entrena, come y descansa como un profesional</h1>' +
-          '<p class="lead">Recomendaciones saludables de nutrición, hidratación y recuperación para rendir más y recuperarte mejor.</p>' +
-          '<div class="btn-row"><button class="btn btn-primary" data-go="biblioteca">Explorar biblioteca' + icon('arrow', 16, '#FAFAFA') + '</button>' +
-          '<button class="btn btn-outline" data-go="favoritos">Mis hábitos</button></div>' +
+          '<span class="pill-glass"><span class="pulse"></span>Para deportistas de alto rendimiento</span>' +
+          '<h1 class="hero-title">Entrena, come y descansa como un <span>profesional</span>.</h1>' +
+          '<p class="hero-lead">Recomendaciones saludables de nutrición, hidratación y recuperación para rendir más y recuperarte mejor.</p>' +
+          '<div class="btn-row"><button class="btn btn-light" data-go="biblioteca">Explorar biblioteca' + icon('arrow', 16, '#09090B') + '</button>' +
+          '<button class="btn btn-glass" data-go="favoritos">Mis hábitos</button></div>' +
         '</div>' +
-        '<div class="hero-media"><img src="' + photo(HERO_PHOTO, 1400) + '" alt="Velocista saliendo de los tacos en una pista de atletismo" onerror="this.remove()"></div>' +
       '</section>' +
 
       '<section class="section"><h2 class="h2">Categorías</h2>' +
@@ -331,7 +331,7 @@
     document.body.classList.add('is-loading');
     var fill = document.getElementById('loader-fill');
     var text = document.getElementById('loader-text');
-    var first = [photo(HERO_PHOTO, 1400)];
+    var first = [photo(HERO_PHOTO, 1800)];
     ITEMS.forEach(function (it) { first.push(photo(it.photo, 700)); });
     var started = Date.now(), finished = false;
     function finish() {
