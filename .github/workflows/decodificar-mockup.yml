@@ -1,0 +1,19 @@
+name: Imágenes del mockup
+on:
+  push:
+    branches: [mockup-capturas]
+    paths: ['mockup-claude-design/*.b64']
+permissions:
+  contents: write
+jobs:
+  decodificar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          for f in mockup-claude-design/*.b64; do base64 -d "$f" > "${f%.b64}"; done
+          git config user.name "Marlon Jaramillo"
+          git config user.email "jaramillomarlon160@gmail.com"
+          git add mockup-claude-design/*.jpg
+          git commit -m "Imágenes del mockup de Claude Design" || echo "sin cambios"
+          git push
