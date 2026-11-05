@@ -132,6 +132,7 @@ h1, h2, h3 { margin: 0; letter-spacing: -0.025em; font-weight: 600; }
 .rec:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); border-color: #d4d4d8; }
 .rec:hover .media img { transform: scale(1.04); }
 .rec-open { width: 100%; border: none; background: none; padding: 0; text-align: left; cursor: pointer; display: flex; flex-direction: column; }
+.rec-open .media { width: 100%; align-self: stretch; flex: none; }
 .rec-text { padding: 16px 18px 18px; display: flex; flex-direction: column; gap: 6px; }
 .rec-title { font-size: 15px; font-weight: 500; line-height: 1.4; letter-spacing: -0.01em; }
 .rec-desc { font-size: 14px; line-height: 1.5; color: var(--muted); }
