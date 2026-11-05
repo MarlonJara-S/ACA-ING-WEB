@@ -1,3 +1,4 @@
+// capturas del prototipo publicado
 import { chromium } from 'playwright';
 const URL = 'https://marlonjara-s.github.io/ACA-ING-WEB/';
 // Espera a que GitHub Pages publique la última versión de los estilos.
