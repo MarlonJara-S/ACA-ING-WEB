@@ -1,0 +1,23 @@
+name: Capturas del mockup
+on:
+  push:
+    branches: [mockup-capturas]
+    paths: ['.github/workflows/mockup-capturas.yml', 'mockup/capturar.mjs']
+permissions:
+  contents: write
+jobs:
+  capturas:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm i --no-save playwright@1.47.2 && npx playwright install --with-deps chromium
+      - run: node mockup/capturar.mjs
+      - run: |
+          git config user.name "Marlon Jaramillo"
+          git config user.email "jaramillomarlon160@gmail.com"
+          git add mockup/*.png
+          git commit -m "Capturas del mockup" || echo "sin cambios"
+          git push
