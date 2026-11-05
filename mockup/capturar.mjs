@@ -1,5 +1,11 @@
 import { chromium } from 'playwright';
 const URL = 'https://marlonjara-s.github.io/ACA-ING-WEB/';
+// Espera a que GitHub Pages publique la última versión de los estilos.
+for (let i = 0; i < 40; i++) {
+  const css = await (await fetch(URL + 'styles.css?t=' + Date.now(), { cache: 'no-store' })).text();
+  if (css.includes('.rec-open .media')) break;
+  await new Promise(r => setTimeout(r, 15000));
+}
 const b = await chromium.launch();
 const p = await b.newPage({ viewport: { width: 1440, height: 900 }, deviceScaleFactor: 1 });
 async function settle() {
@@ -10,7 +16,7 @@ async function settle() {
   });
   await p.waitForTimeout(1200);
 }
-await p.goto(URL + '#/inicio');
+await p.goto(URL + '?v=' + Date.now() + '#/inicio');
 await p.waitForSelector('#loader', { state: 'detached', timeout: 15000 });
 await settle();
 await p.screenshot({ path: 'mockup/1-inicio.png', fullPage: true });
